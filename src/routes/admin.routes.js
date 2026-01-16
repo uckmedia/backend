@@ -12,6 +12,7 @@ router.use(authMiddleware, adminMiddleware);
 
 router.get('/stats', adminController.getStats);
 router.get('/logs', adminController.getLogs);
+router.get('/products', adminController.getProducts);
 
 router.post('/create-product', adminController.createProduct);
 router.post('/create-apikey', adminController.createApiKey);

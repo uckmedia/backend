@@ -16,6 +16,7 @@ class AdminController {
     this.createProduct = this.createProduct.bind(this);
     this.createApiKey = this.createApiKey.bind(this);
     this.getLogs = this.getLogs.bind(this);
+    this.getProducts = this.getProducts.bind(this);
     this.updateApiKey = this.updateApiKey.bind(this);
     this.getStats = this.getStats.bind(this);
   }
@@ -52,6 +53,28 @@ class AdminController {
 
     } catch (error) {
       console.error('Create product error:', error);
+      return res.status(500).json({ success: false, error: 'Internal error' });
+    }
+  }
+
+  /**
+   * GET /admin/products
+   */
+  async getProducts(req, res) {
+    try {
+      const { data, error } = await this.supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        return res.status(400).json({ success: false, error: error.message });
+      }
+
+      return res.json({ success: true, data });
+
+    } catch (error) {
+      console.error('Get products error:', error);
       return res.status(500).json({ success: false, error: 'Internal error' });
     }
   }
