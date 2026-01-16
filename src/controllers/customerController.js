@@ -10,6 +10,12 @@ class CustomerController {
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_KEY
     );
+
+    // Bind methods to preserve 'this' context
+    this.getMyProducts = this.getMyProducts.bind(this);
+    this.getMyApiKeys = this.getMyApiKeys.bind(this);
+    this.getMyOrders = this.getMyOrders.bind(this);
+    this.updateApiKeyDomains = this.updateApiKeyDomains.bind(this);
   }
 
   async getMyProducts(req, res) {
@@ -100,9 +106,9 @@ class CustomerController {
         .single();
 
       if (checkError || !apiKey || apiKey.user_id !== req.user.id) {
-        return res.status(403).json({ 
-          success: false, 
-          error: 'Unauthorized' 
+        return res.status(403).json({
+          success: false,
+          error: 'Unauthorized'
         });
       }
 

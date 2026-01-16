@@ -10,6 +10,13 @@ class PaymentController {
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_KEY
     );
+
+    // Bind methods to preserve 'this' context
+    this.handleWebhook = this.handleWebhook.bind(this);
+    this.handlePaymentSuccess = this.handlePaymentSuccess.bind(this);
+    this.handleSubscriptionCancelled = this.handleSubscriptionCancelled.bind(this);
+    this.handleSubscriptionRenewed = this.handleSubscriptionRenewed.bind(this);
+    this.calculateEndDate = this.calculateEndDate.bind(this);
   }
 
   /**
@@ -128,7 +135,7 @@ class PaymentController {
       // API key'leri yeniden aktifleştir
       await this.supabase
         .from('api_keys')
-        .update({ 
+        .update({
           status: 'active',
           expires_at: newEndDate
         })
@@ -143,7 +150,7 @@ class PaymentController {
 
   calculateEndDate(planType) {
     const now = new Date();
-    
+
     switch (planType) {
       case 'monthly':
         return new Date(now.setMonth(now.getMonth() + 1)).toISOString();

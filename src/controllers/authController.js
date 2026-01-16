@@ -12,6 +12,11 @@ class AuthController {
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_KEY
     );
+
+    // Bind methods to preserve 'this' context
+    this.register = this.register.bind(this);
+    this.login = this.login.bind(this);
+    this.getProfile = this.getProfile.bind(this);
   }
 
   async register(req, res) {
@@ -26,9 +31,9 @@ class AuthController {
         .single();
 
       if (existing) {
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Email already exists' 
+        return res.status(400).json({
+          success: false,
+          error: 'Email already exists'
         });
       }
 
@@ -86,9 +91,9 @@ class AuthController {
         .single();
 
       if (error || !user) {
-        return res.status(401).json({ 
-          success: false, 
-          error: 'Invalid credentials' 
+        return res.status(401).json({
+          success: false,
+          error: 'Invalid credentials'
         });
       }
 
@@ -96,16 +101,16 @@ class AuthController {
       const isValid = await bcrypt.compare(password, user.password_hash);
 
       if (!isValid) {
-        return res.status(401).json({ 
-          success: false, 
-          error: 'Invalid credentials' 
+        return res.status(401).json({
+          success: false,
+          error: 'Invalid credentials'
         });
       }
 
       if (user.status !== 'active') {
-        return res.status(403).json({ 
-          success: false, 
-          error: 'Account is not active' 
+        return res.status(403).json({
+          success: false,
+          error: 'Account is not active'
         });
       }
 

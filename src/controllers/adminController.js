@@ -11,6 +11,13 @@ class AdminController {
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_KEY
     );
+
+    // Bind methods to preserve 'this' context
+    this.createProduct = this.createProduct.bind(this);
+    this.createApiKey = this.createApiKey.bind(this);
+    this.getLogs = this.getLogs.bind(this);
+    this.updateApiKey = this.updateApiKey.bind(this);
+    this.getStats = this.getStats.bind(this);
   }
 
   /**
@@ -54,14 +61,14 @@ class AdminController {
    */
   async createApiKey(req, res) {
     try {
-      const { 
-        user_id, 
-        product_id, 
+      const {
+        user_id,
+        product_id,
         order_id,
-        allowed_domains, 
+        allowed_domains,
         allowed_ips,
         max_requests_per_day,
-        expires_at 
+        expires_at
       } = req.body;
 
       const apiKey = 'lk_' + require('crypto').randomBytes(32).toString('hex');
@@ -91,8 +98,8 @@ class AdminController {
         return res.status(400).json({ success: false, error: error.message });
       }
 
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         data: {
           ...data,
           api_secret: apiSecret // Sadece oluşturma sırasında göster
@@ -110,8 +117,8 @@ class AdminController {
    */
   async getLogs(req, res) {
     try {
-      const { 
-        limit = 100, 
+      const {
+        limit = 100,
         offset = 0,
         result,
         api_key_id,
@@ -139,8 +146,8 @@ class AdminController {
         return res.status(400).json({ success: false, error: error.message });
       }
 
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         data,
         pagination: {
           total: count,
