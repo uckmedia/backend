@@ -39,11 +39,13 @@ const authRoutes = require('./routes/auth.routes');
 const validateRoutes = require('./routes/validate.routes');
 const adminRoutes = require('./routes/admin.routes');
 const customerRoutes = require('./routes/customer.routes');
+const ticketRoutes = require('./routes/ticket.routes');
 
 app.use('/auth', authRoutes);
 app.use('/validate', validateRoutes);
 app.use('/admin', adminRoutes);
 app.use('/customer', customerRoutes);
+app.use('/tickets', ticketRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

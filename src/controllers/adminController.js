@@ -17,6 +17,7 @@ class AdminController {
     this.createApiKey = this.createApiKey.bind(this);
     this.getLogs = this.getLogs.bind(this);
     this.getProducts = this.getProducts.bind(this);
+    this.getApiKeys = this.getApiKeys.bind(this);
     this.updateApiKey = this.updateApiKey.bind(this);
     this.getStats = this.getStats.bind(this);
   }
@@ -75,6 +76,54 @@ class AdminController {
 
     } catch (error) {
       console.error('Get products error:', error);
+      return res.status(500).json({ success: false, error: 'Internal error' });
+    }
+  }
+
+  /**
+   * GET /admin/apikeys
+   * List all API keys with filtering
+   */
+  async getApiKeys(req, res) {
+    try {
+      const { product_id, status, limit = 100, offset = 0 } = req.query;
+
+      let query = this.supabase
+        .from('api_keys')
+        .select(`
+          id,
+          api_key,
+          api_secret,
+          status,
+          allowed_domains,
+          allowed_ips,
+          max_requests_per_day,
+          expires_at,
+          created_at,
+          last_request_at,
+          user:users(id, email, full_name),
+          product:products(id, name, slug)
+        `, { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(offset, offset + parseInt(limit) - 1);
+
+      if (product_id) query = query.eq('product_id', product_id);
+      if (status) query = query.eq('status', status);
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        return res.status(400).json({ success: false, error: error.message });
+      }
+
+      return res.json({
+        success: true,
+        data,
+        pagination: { total: count, limit: parseInt(limit), offset: parseInt(offset) }
+      });
+
+    } catch (error) {
+      console.error('Get API keys error:', error);
       return res.status(500).json({ success: false, error: 'Internal error' });
     }
   }
