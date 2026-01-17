@@ -14,7 +14,7 @@ class LogService {
 
   async log(logData, responseTime) {
     try {
-      await this.supabase.from('validation_logs').insert({
+      const logEntry = {
         api_key_id: logData.api_key_id || null,
         product_id: logData.product_id || null,
         domain: logData.domain,
@@ -24,8 +24,16 @@ class LogService {
         error_code: logData.error_code || null,
         error_message: logData.error_message || null,
         request_data: logData.request_data || {},
-        response_time: responseTime
-      });
+        response_time: responseTime,
+        created_at: new Date().toISOString()
+      };
+
+      await this.supabase.from('validation_logs').insert(logEntry);
+
+      // Emit to socket for real-time dashboard
+      if (global.io) {
+        global.io.emit('security_log', logEntry);
+      }
     } catch (error) {
       console.error('Log error:', error);
     }
